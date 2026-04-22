@@ -41,15 +41,18 @@ import os
 from verl_plugin_fl.utils import FLEnvManager, may_enable_flag_gems
 from verl.trainer.config import CheckpointConfig
 from verl.workers.config import FSDPEngineConfig, FSDPOptimizerConfig, HFModelConfig
+from verl.utils.device import get_device_name
 from verl.workers.engine.base import EngineRegistry
 from verl.workers.engine.fsdp import FSDPEngineWithLMHead
 from verl.workers.engine.fsdp.transformer_impl import FSDPEngineWithValueHead
+
+_device = get_device_name()
 
 logger = logging.getLogger(__file__)
 logger.setLevel(os.getenv("VERL_LOGGING_LEVEL", "WARN"))
 
 
-@EngineRegistry.register(model_type="language_model", backend=["fsdp", "fsdp2"], device="flagos")
+@EngineRegistry.register(model_type="language_model", backend=["fsdp", "fsdp2"], device=_device)
 class FSDPFLEngineWithLMHead(FSDPEngineWithLMHead):
     """FL Extended FSDP Engine with LM Head
 
@@ -89,7 +92,7 @@ class FSDPFLEngineWithLMHead(FSDPEngineWithLMHead):
         super().initialize()
 
 
-@EngineRegistry.register(model_type="value_model", backend=["fsdp", "fsdp2"], device="flagos")
+@EngineRegistry.register(model_type="value_model", backend=["fsdp", "fsdp2"], device=_device)
 class FSDPFLEngineWithValueHead(FSDPEngineWithValueHead):
     """FL Extended FSDP Engine with Value Head
 

@@ -6,6 +6,6 @@ Usage in verl config:
     fsdp_config:
         custom_engine_module: "pkg://verl_plugin_fl.engine"
 
-VERL_ENGINE_DEVICE is auto-set to "flagos" on plugin import.
-No manual environment variable configuration needed.
+The plugin overrides default engines for the detected hardware via
+"last writer wins" registration. No extra environment variables needed.
 """

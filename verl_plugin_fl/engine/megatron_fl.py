@@ -39,14 +39,17 @@ import os
 from verl_plugin_fl.utils import FLEnvManager, may_enable_flag_gems
 from verl.trainer.config import CheckpointConfig
 from verl.workers.config import HFModelConfig, McoreEngineConfig, McoreOptimizerConfig
+from verl.utils.device import get_device_name
 from verl.workers.engine.base import EngineRegistry
 from verl.workers.engine.megatron import MegatronEngineWithLMHead
+
+_device = get_device_name()
 
 logger = logging.getLogger(__file__)
 logger.setLevel(os.getenv("VERL_LOGGING_LEVEL", "WARN"))
 
 
-@EngineRegistry.register(model_type="language_model", backend="megatron", device="flagos")
+@EngineRegistry.register(model_type="language_model", backend="megatron", device=_device)
 class MegatronFLEngineWithLMHead(MegatronEngineWithLMHead):
     """Megatron Engine with FL (FlagOS) multi-chip support.
 

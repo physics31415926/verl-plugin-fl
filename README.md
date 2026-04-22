@@ -32,13 +32,12 @@ pip install git+https://github.com/flagos-ai/verl-plugin-fl.git
 ## How It Works
 
 1. `custom_engine_module` triggers `load_module("pkg://verl_plugin_fl.engine")`
-2. This imports `verl_plugin_fl.engine.__init__`, which:
-   - Auto-sets `VERL_ENGINE_DEVICE=flagos` via `os.environ.setdefault()` (won't override if already set)
-   - Imports `fsdp_fl.py` and `megatron_fl.py`
-3. The `@EngineRegistry.register(device="flagos")` decorators register FL engines into the global registry
-4. `EngineRegistry.get_engine_cls()` reads `VERL_ENGINE_DEVICE` and selects the FL engine
+2. This imports `verl_plugin_fl.engine.__init__`, which imports `fsdp_fl.py` and `megatron_fl.py`
+3. Each engine file calls `get_device_name()` at import time to detect the current hardware (e.g. `"cuda"`, `"npu"`)
+4. The `@EngineRegistry.register(device=_device)` decorators override the default engine for the detected hardware ("last writer wins")
+5. `EngineRegistry.get_engine_cls()` uses the same `get_device_name()` to look up the engine — which now resolves to the FL version
 
-This means **only `custom_engine_module` needs to be configured** — the device selection happens automatically.
+This means **only `custom_engine_module` needs to be configured** — no environment variables needed.
 
 ## verl Config
 
@@ -98,16 +97,6 @@ actor_rollout_ref.actor.fsdp_config.custom_engine_module='/path/to/verl_plugin_f
 
 ## Environment Variables
 
-### Device Selection (Auto-configured)
-
-`VERL_ENGINE_DEVICE` is automatically set to `flagos` when the plugin is loaded.
-You only need to set it manually if you want to override the default:
-
-```bash
-# Optional: override device selection (auto-set by plugin)
-export VERL_ENGINE_DEVICE=flagos
-```
-
 ### Training Phase (TE-FL / Megatron / FSDP)
 
 ```bash
@@ -146,9 +135,9 @@ See [TransformerEngine-FL](https://github.com/flagos-ai/TransformerEngine-FL/pul
 
 | Engine Class | model_type | backend | device |
 |---|---|---|---|
-| `FSDPFLEngineWithLMHead` | `language_model` | `fsdp`, `fsdp2` | `flagos` |
-| `FSDPFLEngineWithValueHead` | `value_model` | `fsdp`, `fsdp2` | `flagos` |
-| `MegatronFLEngineWithLMHead` | `language_model` | `megatron` | `flagos` |
+| `FSDPFLEngineWithLMHead` | `language_model` | `fsdp`, `fsdp2` | auto (`get_device_name()`) |
+| `FSDPFLEngineWithValueHead` | `value_model` | `fsdp`, `fsdp2` | auto (`get_device_name()`) |
+| `MegatronFLEngineWithLMHead` | `language_model` | `megatron` | auto (`get_device_name()`) |
 
 ## Dependencies
 
