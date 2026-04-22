@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "verl-plugin-fl"
+version = "0.1.0"
+description = "FlagOS multi-chip engine plugin for verl"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "verl>=0.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]
+
+[tool.setuptools.packages.find]
+include = ["verl_plugin_fl*"]
