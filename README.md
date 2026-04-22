@@ -32,9 +32,13 @@ pip install git+https://github.com/flagos-ai/verl-plugin-fl.git
 ## How It Works
 
 1. `custom_engine_module` triggers `load_module("pkg://verl_plugin_fl.engine")`
-2. This imports `verl_plugin_fl.engine.__init__`, which imports `fsdp_fl.py` and `megatron_fl.py`
-3. The `@EngineRegistry.register(device="flagos")` decorators register FL engines
-4. `VERL_ENGINE_DEVICE=flagos` makes `EngineRegistry.get_engine_cls()` select the FL engine
+2. This imports `verl_plugin_fl.engine.__init__`, which:
+   - Auto-sets `VERL_ENGINE_DEVICE=flagos` via `os.environ.setdefault()` (won't override if already set)
+   - Imports `fsdp_fl.py` and `megatron_fl.py`
+3. The `@EngineRegistry.register(device="flagos")` decorators register FL engines into the global registry
+4. `EngineRegistry.get_engine_cls()` reads `VERL_ENGINE_DEVICE` and selects the FL engine
+
+This means **only `custom_engine_module` needs to be configured** — the device selection happens automatically.
 
 ## verl Config
 
@@ -94,10 +98,13 @@ actor_rollout_ref.actor.fsdp_config.custom_engine_module='/path/to/verl_plugin_f
 
 ## Environment Variables
 
-### Required
+### Device Selection (Auto-configured)
+
+`VERL_ENGINE_DEVICE` is automatically set to `flagos` when the plugin is loaded.
+You only need to set it manually if you want to override the default:
 
 ```bash
-# Tell EngineRegistry to use flagos device
+# Optional: override device selection (auto-set by plugin)
 export VERL_ENGINE_DEVICE=flagos
 ```
 
