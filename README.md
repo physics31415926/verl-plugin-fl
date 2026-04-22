@@ -38,13 +38,23 @@ pip install git+https://github.com/flagos-ai/verl-plugin-fl.git
 
 ## verl Config
 
-In your verl training YAML config, add:
+In your verl training script, add the following Hydra overrides:
+
+```bash
+actor_rollout_ref.actor.fsdp_config.custom_engine_module='pkg://verl_plugin_fl.engine'
+actor_rollout_ref.ref.fsdp_config.custom_engine_module='pkg://verl_plugin_fl.engine'
+```
+
+Or in YAML config:
 
 ```yaml
-trainer:
-  engine:
-    # Load FL engine plugin dynamically
-    custom_engine_module: "pkg://verl_plugin_fl.engine"
+actor_rollout_ref:
+  actor:
+    fsdp_config:
+      custom_engine_module: "pkg://verl_plugin_fl.engine"
+  ref:
+    fsdp_config:
+      custom_engine_module: "pkg://verl_plugin_fl.engine"
 ```
 
 ## Environment Variables
