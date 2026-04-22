@@ -23,7 +23,7 @@ verl_plugin_fl/
 
 ```bash
 # From local directory (development mode)
-cd verl_plugin_fl && pip install -e .
+cd verl-plugin-fl && pip install -e .
 
 # From GitHub
 pip install git+https://github.com/flagos-ai/verl-plugin-fl.git
