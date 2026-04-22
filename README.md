@@ -38,7 +38,13 @@ pip install git+https://github.com/flagos-ai/verl-plugin-fl.git
 
 ## verl Config
 
-In your verl training script, add the following Hydra overrides:
+`custom_engine_module` supports two loading modes: `pkg://` (installed package) and `file://` (local file path).
+
+### Method 1: Package Mode (`pkg://`)
+
+Requires `pip install` first. Suitable for production.
+
+Hydra overrides:
 
 ```bash
 actor_rollout_ref.actor.fsdp_config.custom_engine_module='pkg://verl_plugin_fl.engine'
@@ -55,6 +61,35 @@ actor_rollout_ref:
   ref:
     fsdp_config:
       custom_engine_module: "pkg://verl_plugin_fl.engine"
+```
+
+### Method 2: File Path Mode (`file://`)
+
+No installation needed. Load directly from local file. Suitable for development and debugging.
+
+Hydra overrides:
+
+```bash
+actor_rollout_ref.actor.fsdp_config.custom_engine_module='file:///path/to/verl_plugin_fl/engine/__init__.py'
+actor_rollout_ref.ref.fsdp_config.custom_engine_module='file:///path/to/verl_plugin_fl/engine/__init__.py'
+```
+
+Or in YAML config:
+
+```yaml
+actor_rollout_ref:
+  actor:
+    fsdp_config:
+      custom_engine_module: "file:///path/to/verl_plugin_fl/engine/__init__.py"
+  ref:
+    fsdp_config:
+      custom_engine_module: "file:///path/to/verl_plugin_fl/engine/__init__.py"
+```
+
+You can also omit the `file://` prefix and use the path directly:
+
+```bash
+actor_rollout_ref.actor.fsdp_config.custom_engine_module='/path/to/verl_plugin_fl/engine/__init__.py'
 ```
 
 ## Environment Variables
