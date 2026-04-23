@@ -31,68 +31,25 @@ pip install git+https://github.com/flagos-ai/verl-plugin-fl.git
 
 ## How It Works
 
-1. `custom_engine_module` triggers `load_module("pkg://verl_plugin_fl.engine")`
+1. `VERL_USE_EXTERNAL_MODULES=verl_plugin_fl.engine` triggers `importlib.import_module("verl_plugin_fl.engine")`
 2. This imports `verl_plugin_fl.engine.__init__`, which imports `fsdp_fl.py` and `megatron_fl.py`
 3. Each engine file calls `get_device_name()` at import time to detect the current hardware (e.g. `"cuda"`, `"npu"`)
 4. The `@EngineRegistry.register(device=_device)` decorators override the default engine for the detected hardware ("last writer wins")
 5. `EngineRegistry.get_engine_cls()` uses the same `get_device_name()` to look up the engine — which now resolves to the FL version
 
-This means **only `custom_engine_module` needs to be configured** — no environment variables needed.
+This means **only `VERL_USE_EXTERNAL_MODULES` needs to be set** — one environment variable to load the plugin.
 
-## verl Config
-
-`custom_engine_module` supports two loading modes: `pkg://` (installed package) and `file://` (local file path).
-
-### Method 1: Package Mode (`pkg://`)
-
-Requires `pip install` first. Suitable for production.
-
-Hydra overrides:
+## Usage
 
 ```bash
-actor_rollout_ref.actor.fsdp_config.custom_engine_module='pkg://verl_plugin_fl.engine'
-actor_rollout_ref.ref.fsdp_config.custom_engine_module='pkg://verl_plugin_fl.engine'
+# Set before launching training
+export VERL_USE_EXTERNAL_MODULES=verl_plugin_fl.engine
 ```
 
-Or in YAML config:
-
-```yaml
-actor_rollout_ref:
-  actor:
-    fsdp_config:
-      custom_engine_module: "pkg://verl_plugin_fl.engine"
-  ref:
-    fsdp_config:
-      custom_engine_module: "pkg://verl_plugin_fl.engine"
-```
-
-### Method 2: File Path Mode (`file://`)
-
-No installation needed. Load directly from local file. Suitable for development and debugging.
-
-Hydra overrides:
+Multiple external modules can be comma-separated:
 
 ```bash
-actor_rollout_ref.actor.fsdp_config.custom_engine_module='file:///path/to/verl_plugin_fl/engine/__init__.py'
-actor_rollout_ref.ref.fsdp_config.custom_engine_module='file:///path/to/verl_plugin_fl/engine/__init__.py'
-```
-
-Or in YAML config:
-
-```yaml
-actor_rollout_ref:
-  actor:
-    fsdp_config:
-      custom_engine_module: "file:///path/to/verl_plugin_fl/engine/__init__.py"
-  ref:
-    fsdp_config:
-      custom_engine_module: "file:///path/to/verl_plugin_fl/engine/__init__.py"
-```
-
-You can also omit the `file://` prefix and use the path directly:
-
-```bash
-actor_rollout_ref.actor.fsdp_config.custom_engine_module='/path/to/verl_plugin_fl/engine/__init__.py'
+export VERL_USE_EXTERNAL_MODULES=verl_plugin_fl.engine,other_plugin.module
 ```
 
 ## Environment Variables
