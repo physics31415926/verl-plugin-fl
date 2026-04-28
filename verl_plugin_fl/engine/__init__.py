@@ -5,8 +5,7 @@
 The plugin calls get_device_name() at import time and uses "last writer wins" to override
 the default engine for the detected hardware.
 
-Usage:
-    export VERL_USE_EXTERNAL_MODULES=verl_plugin_fl.engine
+Loaded by verl_plugin_fl.__init__ (entry point: VERL_USE_EXTERNAL_MODULES=verl_plugin_fl).
 """
 
 from verl_plugin_fl.engine.fsdp_fl import FSDPFLEngineWithLMHead, FSDPFLEngineWithValueHead  # noqa: F401
