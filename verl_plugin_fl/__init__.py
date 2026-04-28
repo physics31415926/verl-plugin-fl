@@ -10,10 +10,21 @@ Importing this package:
 2. Registers FL engines via @EngineRegistry.register() ("last writer wins")
 """
 
+import logging
+
 from verl_plugin_fl.platform import register_platform  # noqa: F401
+
+logger = logging.getLogger(__name__)
 
 # 1. Platform: eagerly initialise and log FL status
 register_platform()
 
 # 2. Engines: import triggers @EngineRegistry.register() overrides
 from verl_plugin_fl.engine import FSDPFLEngineWithLMHead, FSDPFLEngineWithValueHead, MegatronFLEngineWithLMHead  # noqa: F401, E402
+
+logger.info(
+    "verl_plugin_fl: registered engines — %s, %s, %s",
+    FSDPFLEngineWithLMHead.__name__,
+    FSDPFLEngineWithValueHead.__name__,
+    MegatronFLEngineWithLMHead.__name__,
+)

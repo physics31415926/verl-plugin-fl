@@ -14,7 +14,7 @@ Usage:
 
 import logging
 
-from verl.plugin.platform import get_platform
+from verl.plugin.platform import PlatformRegistry, get_platform
 from verl_plugin_fl.utils.config_manager import FLEnvManager
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,9 @@ def register_platform() -> None:
     """Eagerly initialise the platform and log FL status."""
     platform = get_platform()
     logger.info(
-        "FL platform: %s | %s",
+        "FL platform: %s (%s) | registered platforms: %s | %s",
         platform.device_name,
+        type(platform).__name__,
+        PlatformRegistry.registered_names(),
         FLEnvManager.get_summary(),
     )
